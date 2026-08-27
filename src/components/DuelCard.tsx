@@ -1,9 +1,11 @@
+import Link from "next/link";
 import { Lock, Swords } from "lucide-react";
 import { Avatar } from "./Avatar";
 import { TrustBadge } from "./TrustBadge";
 
 export type Duel = {
   id: string;
+  opponentSlug: string;
   game: string;
   opponent: string;
   opponentTrust: number;
@@ -13,6 +15,12 @@ export type Duel = {
 };
 
 export function DuelCard({ duel }: { duel: Duel }) {
+  const params = new URLSearchParams({ game: duel.game, stake: String(duel.stake) });
+  const href =
+    duel.status === "locked"
+      ? `/duels/${duel.opponentSlug}/match?${params.toString()}`
+      : `/duels/${duel.opponentSlug}/confirm?${params.toString()}`;
+
   return (
     <div className="flex w-64 shrink-0 flex-col gap-4 rounded-2xl border border-(--color-surface-border) bg-(--color-surface) p-4 shadow-[0_0_30px_-18px_rgba(52,211,224,0.5)]">
       <div className="flex items-center justify-between text-xs text-(--color-text-muted)">
@@ -40,12 +48,12 @@ export function DuelCard({ duel }: { duel: Duel }) {
         {duel.stake}€ <span className="text-(--color-text-muted)">vs</span> {duel.stake}€
       </div>
 
-      <button
-        type="button"
-        className="w-full rounded-xl bg-gradient-to-r from-(--color-accent-2) to-(--color-accent) py-2.5 text-sm font-semibold text-white"
+      <Link
+        href={href}
+        className="block w-full rounded-xl bg-gradient-to-r from-(--color-accent-2) to-(--color-accent) py-2.5 text-center text-sm font-semibold text-white"
       >
         {duel.status === "locked" ? "Läuft" : "Annehmen"}
-      </button>
+      </Link>
     </div>
   );
 }

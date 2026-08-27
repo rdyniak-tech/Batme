@@ -1,4 +1,5 @@
-import type { ButtonHTMLAttributes } from "react";
+import type { AnchorHTMLAttributes, ButtonHTMLAttributes } from "react";
+import Link from "next/link";
 
 type Variant = "primary" | "secondary" | "outline";
 
@@ -11,14 +12,33 @@ const variantClasses: Record<Variant, string> = {
     "bg-transparent text-(--color-text) border border-(--color-surface-border)",
 };
 
+const baseClasses =
+  "block w-full rounded-xl px-4 py-3.5 text-center text-sm font-semibold transition-opacity active:opacity-80 disabled:cursor-not-allowed";
+
 export function Button({
   variant = "primary",
   className = "",
+  href,
   ...props
-}: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: Variant }) {
+}: ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: Variant;
+  href?: string;
+}) {
+  if (href) {
+    return (
+      <Link
+        href={href}
+        className={`${baseClasses} ${variantClasses[variant]} ${className}`}
+        {...(props as AnchorHTMLAttributes<HTMLAnchorElement>)}
+      >
+        {props.children}
+      </Link>
+    );
+  }
+
   return (
     <button
-      className={`w-full rounded-xl px-4 py-3.5 text-center text-sm font-semibold transition-opacity active:opacity-80 disabled:cursor-not-allowed ${variantClasses[variant]} ${className}`}
+      className={`${baseClasses} ${variantClasses[variant]} ${className}`}
       {...props}
     />
   );

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Bell, Search, Share2, Radio } from "lucide-react";
 import { PhoneScreen } from "@/components/PhoneScreen";
 import { DuelCard, type Duel } from "@/components/DuelCard";
@@ -7,6 +8,7 @@ import { TrustBadge } from "@/components/TrustBadge";
 const openDuels: Duel[] = [
   {
     id: "1",
+    opponentSlug: "perino",
     game: "FIFA 26",
     you: "Du",
     opponent: "Perino",
@@ -16,6 +18,7 @@ const openDuels: Duel[] = [
   },
   {
     id: "2",
+    opponentSlug: "michaelle_s",
     game: "Call of Duty",
     you: "Du",
     opponent: "Michaelle_S",
@@ -26,9 +29,9 @@ const openDuels: Duel[] = [
 ];
 
 const publicMatches = [
-  { id: "p1", game: "FIFA 26", player: "Hakan62aslan", trust: 91, stake: 15 },
-  { id: "p2", game: "COD: Warzone", player: "TeamNova", trust: 76, stake: 40 },
-  { id: "p3", game: "FIFA 26", player: "Rafael_K", trust: 64, stake: 10 },
+  { id: "p1", slug: "hakan62aslan", game: "FIFA 26", player: "Hakan62aslan", trust: 91, stake: 15 },
+  { id: "p2", slug: "teamnova", game: "COD: Warzone", player: "TeamNova", trust: 76, stake: 40 },
+  { id: "p3", slug: "rafael_k", game: "FIFA 26", player: "Rafael_K", trust: 64, stake: 10 },
 ];
 
 export default function HomePage() {
@@ -52,8 +55,8 @@ export default function HomePage() {
       </section>
 
       <section className="pb-6">
-        <button
-          type="button"
+        <Link
+          href="/duels"
           className="flex w-full items-center justify-between gap-4 rounded-2xl border border-(--color-surface-border) bg-(--color-surface) p-4 text-left"
         >
           <div className="flex flex-col gap-1">
@@ -63,7 +66,7 @@ export default function HomePage() {
             </span>
           </div>
           <Share2 size={18} className="shrink-0 text-(--color-text-muted)" />
-        </button>
+        </Link>
       </section>
 
       <section className="pb-6">
@@ -99,8 +102,9 @@ export default function HomePage() {
         <h2 className="text-sm font-semibold text-(--color-text-muted)">Öffentliche Matches</h2>
         <div className="flex flex-col gap-2">
           {publicMatches.map((match) => (
-            <div
+            <Link
               key={match.id}
+              href={`/duels/${match.slug}`}
               className="flex items-center gap-3 rounded-xl border border-(--color-surface-border) bg-(--color-surface) p-3"
             >
               <Avatar name={match.player} size="sm" />
@@ -110,7 +114,7 @@ export default function HomePage() {
               </div>
               <TrustBadge score={match.trust} />
               <span className="text-sm font-bold">{match.stake}€</span>
-            </div>
+            </Link>
           ))}
         </div>
       </section>
