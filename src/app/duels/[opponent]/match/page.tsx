@@ -1,8 +1,8 @@
 "use client";
 
-import { use } from "react";
+import { use, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Lock, Gamepad2 } from "lucide-react";
+import { Lock, Gamepad2, Camera, CheckCircle2 } from "lucide-react";
 import { PhoneScreen } from "@/components/PhoneScreen";
 import { Avatar } from "@/components/Avatar";
 import { Button } from "@/components/ui/Button";
@@ -18,6 +18,10 @@ export default function MatchActivePage({
   const searchParams = useSearchParams();
   const game = searchParams.get("game") ?? "";
   const stake = Number(searchParams.get("stake")) || 0;
+  const isProof = searchParams.get("mode") === "proof";
+
+  const [beforeProof, setBeforeProof] = useState(!isProof);
+  const [afterProof, setAfterProof] = useState(false);
 
   if (!opponent) {
     return (
@@ -25,6 +29,24 @@ export default function MatchActivePage({
         <p className="text-sm text-(--color-text-muted)">
           Dieser Spieler existiert nicht (mehr).
         </p>
+      </PhoneScreen>
+    );
+  }
+
+  const resultHref = `/duels/${opponent.slug}/result?game=${encodeURIComponent(game)}&stake=${stake}`;
+
+  if (!beforeProof) {
+    return (
+      <PhoneScreen title="5. Match aktiv" nav>
+        <div className="flex flex-col items-center gap-4 rounded-2xl border border-(--color-surface-border) bg-(--color-surface) p-6 text-center">
+          <Camera size={28} className="text-(--color-accent)" />
+          <h2 className="text-base font-semibold">Beweisfoto vor dem Match</h2>
+          <p className="text-sm text-(--color-text-muted)">
+            Erstelle einen Screenshot vom Spielstart (z.B. 0:0-Anzeige oder Lobby). BATME
+            versieht das Foto automatisch mit Zeitstempel und QR-Code.
+          </p>
+          <Button onClick={() => setBeforeProof(true)}>Beweisfoto aufnehmen</Button>
+        </div>
       </PhoneScreen>
     );
   }
@@ -66,19 +88,35 @@ export default function MatchActivePage({
           <p className="text-center text-sm text-(--color-text-muted)">
             Running · Waiting for Result…
           </p>
+
+          {isProof && (
+            <div className="flex items-center justify-center gap-1.5 text-xs text-(--color-win)">
+              <CheckCircle2 size={13} /> Vor-Match-Beweis gespeichert
+            </div>
+          )}
         </div>
 
-        <p className="text-center text-xs text-(--color-text-muted)">
-          Spiel auf eurer Konsole/PC fertig gespielt? Beide Seiten bestätigen anschließend das
-          Ergebnis.
-        </p>
-
-        <Button
-          variant="secondary"
-          href={`/duels/${opponent.slug}/result?game=${encodeURIComponent(game)}&stake=${stake}`}
-        >
-          Match beenden
-        </Button>
+        {isProof && !afterProof ? (
+          <div className="flex flex-col items-center gap-3 rounded-2xl border border-(--color-surface-border) bg-(--color-surface) p-5 text-center">
+            <Camera size={24} className="text-(--color-accent)" />
+            <p className="text-sm text-(--color-text-muted)">
+              Spiel beendet? Erstelle jetzt den Beweis-Screenshot vom Endergebnis.
+            </p>
+            <Button variant="secondary" onClick={() => setAfterProof(true)}>
+              Beweisfoto (Endergebnis) aufnehmen
+            </Button>
+          </div>
+        ) : (
+          <>
+            <p className="text-center text-xs text-(--color-text-muted)">
+              Spiel auf eurer Konsole/PC fertig gespielt? Beide Seiten bestätigen anschließend
+              das Ergebnis.
+            </p>
+            <Button variant="secondary" href={resultHref}>
+              Match beenden
+            </Button>
+          </>
+        )}
       </div>
     </PhoneScreen>
   );

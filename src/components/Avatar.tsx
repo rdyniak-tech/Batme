@@ -8,6 +8,7 @@ function initialsOf(name: string) {
 }
 
 const sizeClasses = {
+  xs: "h-7 w-7 text-[10px]",
   sm: "h-10 w-10 text-xs",
   md: "h-14 w-14 text-base",
   lg: "h-20 w-20 text-xl",

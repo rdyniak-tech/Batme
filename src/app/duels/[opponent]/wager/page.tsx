@@ -2,6 +2,7 @@
 
 import { use, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Handshake, Camera } from "lucide-react";
 import { PhoneScreen } from "@/components/PhoneScreen";
 import { Avatar } from "@/components/Avatar";
 import { Button } from "@/components/ui/Button";
@@ -18,6 +19,7 @@ export default function WagerPage({
 
   const [selectedGame, setSelectedGame] = useState(opponent?.mainGame ?? "");
   const [stake, setStake] = useState(20);
+  const [mode, setMode] = useState<"trust" | "proof">("trust");
 
   if (!opponent) {
     return (
@@ -33,6 +35,7 @@ export default function WagerPage({
     const params = new URLSearchParams({
       game: selectedGame,
       stake: String(stake),
+      mode,
     });
     router.push(`/duels/${opponent!.slug}/confirm?${params.toString()}`);
   }
@@ -72,6 +75,42 @@ export default function WagerPage({
           <div className="flex flex-col items-center gap-1.5">
             <Avatar name={opponent.name} size="md" />
             <span className="text-xs text-(--color-text-muted)">{opponent.name}</span>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-3">
+          <h2 className="text-sm font-semibold text-(--color-text-muted)">Nachweis-Modus</h2>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setMode("trust")}
+              className={`flex flex-col items-center gap-1.5 rounded-2xl border p-3 text-center ${
+                mode === "trust"
+                  ? "border-(--color-accent) bg-(--color-surface)"
+                  : "border-(--color-surface-border) bg-(--color-surface)"
+              }`}
+            >
+              <Handshake size={18} className="text-(--color-accent)" />
+              <span className="text-sm font-semibold">Vertrauen</span>
+              <span className="text-[11px] text-(--color-text-muted)">
+                Beide bestätigen den Sieger
+              </span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode("proof")}
+              className={`flex flex-col items-center gap-1.5 rounded-2xl border p-3 text-center ${
+                mode === "proof"
+                  ? "border-(--color-accent) bg-(--color-surface)"
+                  : "border-(--color-surface-border) bg-(--color-surface)"
+              }`}
+            >
+              <Camera size={18} className="text-(--color-accent)" />
+              <span className="text-sm font-semibold">Nachweis</span>
+              <span className="text-[11px] text-(--color-text-muted)">
+                Foto vor & nach dem Match
+              </span>
+            </button>
           </div>
         </div>
 

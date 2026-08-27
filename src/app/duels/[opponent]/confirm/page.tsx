@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { Gamepad2 } from "lucide-react";
+import { Gamepad2, Camera, Handshake } from "lucide-react";
 import { PhoneScreen } from "@/components/PhoneScreen";
 import { Avatar } from "@/components/Avatar";
 import { Button } from "@/components/ui/Button";
@@ -10,14 +10,15 @@ export default async function ConfirmBetPage({
   searchParams,
 }: {
   params: Promise<{ opponent: string }>;
-  searchParams: Promise<{ game?: string; stake?: string }>;
+  searchParams: Promise<{ game?: string; stake?: string; mode?: string }>;
 }) {
   const { opponent: slug } = await params;
-  const { game, stake: stakeParam } = await searchParams;
+  const { game, stake: stakeParam, mode = "trust" } = await searchParams;
   const opponent = getOpponent(slug);
   if (!opponent) notFound();
 
   const stake = Number(stakeParam) || 0;
+  const isProof = mode === "proof";
 
   return (
     <PhoneScreen title="4. Bestätigen" nav>
@@ -44,9 +45,18 @@ export default async function ConfirmBetPage({
           <div className="rounded-xl border border-(--color-surface-border) bg-(--color-bg-elevated) py-3 text-center text-lg font-bold">
             {stake * 2}€ Total Pot
           </div>
+
+          <div className="flex items-center justify-center gap-1.5 text-xs text-(--color-text-muted)">
+            {isProof ? <Camera size={13} /> : <Handshake size={13} />}
+            {isProof ? "Nachweis-Modus: Foto vor & nach dem Match" : "Vertrauens-Modus"}
+          </div>
         </div>
 
-        <Button href={`/duels/${opponent.slug}/match?game=${encodeURIComponent(game ?? "")}&stake=${stake}`}>
+        <Button
+          href={`/duels/${opponent.slug}/match?game=${encodeURIComponent(
+            game ?? "",
+          )}&stake=${stake}&mode=${mode}`}
+        >
           Confirm Bet
         </Button>
       </div>

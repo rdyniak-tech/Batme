@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { Bell, Search, Share2, Radio } from "lucide-react";
+import { Bell, Search, Share2, Radio, ChevronRight } from "lucide-react";
 import { PhoneScreen } from "@/components/PhoneScreen";
 import { DuelCard, type Duel } from "@/components/DuelCard";
 import { Avatar } from "@/components/Avatar";
 import { TrustBadge } from "@/components/TrustBadge";
+import { getEvent, currentUser } from "@/lib/mockData";
 
 const openDuels: Duel[] = [
   {
@@ -35,13 +36,22 @@ const publicMatches = [
 ];
 
 export default function HomePage() {
+  const mainEvent = getEvent("perino-vs-michel_s")!;
+
   return (
     <PhoneScreen
       nav
       headerAction={
         <div className="flex items-center gap-4 text-(--color-text-muted)">
-          <Search size={20} />
-          <Bell size={20} />
+          <Link href="/duels" aria-label="Suche">
+            <Search size={20} />
+          </Link>
+          <Link href="/notifications" aria-label="Benachrichtigungen">
+            <Bell size={20} />
+          </Link>
+          <Link href="/profile" aria-label="Profil">
+            <Avatar name={currentUser.username} size="xs" ring={false} />
+          </Link>
         </div>
       }
     >
@@ -69,33 +79,39 @@ export default function HomePage() {
         </Link>
       </section>
 
-      <section className="pb-6">
-        <div className="flex flex-col gap-3 rounded-2xl border border-(--color-accent)/30 bg-gradient-to-br from-(--color-surface) to-(--color-bg-elevated) p-4 shadow-[0_0_40px_-20px_rgba(52,211,224,0.7)]">
+      <section className="flex flex-col gap-2 pb-6">
+        <Link
+          href={`/events/${mainEvent.slug}`}
+          className="flex flex-col gap-3 rounded-2xl border border-(--color-accent)/30 bg-gradient-to-br from-(--color-surface) to-(--color-bg-elevated) p-4 shadow-[0_0_40px_-20px_rgba(52,211,224,0.7)]"
+        >
           <div className="flex items-center gap-2 text-xs font-semibold text-(--color-accent)">
             <Radio size={14} />
             MAIN EVENT
           </div>
           <div className="flex items-center justify-between">
             <div className="flex flex-col items-center gap-1.5">
-              <Avatar name="Perino" size="lg" />
-              <span className="text-xs">Perino</span>
+              <Avatar name={mainEvent.playerA} size="lg" />
+              <span className="text-xs">{mainEvent.playerA}</span>
             </div>
             <span className="text-sm font-bold italic text-(--color-text-muted)">VS</span>
             <div className="flex flex-col items-center gap-1.5">
-              <Avatar name="Michel_S" size="lg" />
-              <span className="text-xs">Michel_S</span>
+              <Avatar name={mainEvent.playerB} size="lg" />
+              <span className="text-xs">{mainEvent.playerB}</span>
             </div>
           </div>
           <p className="text-center text-xs text-(--color-text-muted)">
-            FIFA 26 · Sa. 20:00 Uhr · Live auf Twitch
+            {mainEvent.game} · {mainEvent.date} · Live auf {mainEvent.streamUrl}
           </p>
-          <button
-            type="button"
-            className="w-full rounded-xl bg-gradient-to-r from-(--color-accent-2) to-(--color-accent) py-2.5 text-sm font-semibold text-white"
-          >
+          <span className="block w-full rounded-xl bg-gradient-to-r from-(--color-accent-2) to-(--color-accent) py-2.5 text-center text-sm font-semibold text-white">
             Jetzt mitwetten
-          </button>
-        </div>
+          </span>
+        </Link>
+        <Link
+          href="/events"
+          className="flex items-center justify-center gap-1 text-xs font-medium text-(--color-text-muted)"
+        >
+          Alle Events ansehen <ChevronRight size={12} />
+        </Link>
       </section>
 
       <section className="flex flex-col gap-3 pb-4">
