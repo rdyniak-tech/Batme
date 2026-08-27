@@ -1,8 +1,13 @@
-export function Logo({ className = "" }: { className?: string }) {
+import Image from "next/image";
+import logo from "../../public/brand/batme-logo.png";
+
+export function Logo({ className = "h-6" }: { className?: string }) {
   return (
-    <span className={`inline-flex items-center font-extrabold tracking-tight ${className}`}>
-      <span className="text-(--color-accent)">B</span>
-      <span className="text-white">ATME</span>
-    </span>
+    <Image
+      src={logo}
+      alt="BATME"
+      className={`w-auto ${className}`}
+      priority
+    />
   );
 }

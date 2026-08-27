@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { PhoneScreen } from "@/components/PhoneScreen";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -37,6 +38,7 @@ function calculateAge(birthDate: string): number | null {
 }
 
 export default function RegisterPage() {
+  const router = useRouter();
   const [form, setForm] = useState<FormState>(initialState);
   const [touched, setTouched] = useState<Partial<Record<keyof FormState, boolean>>>({});
   const [submitted, setSubmitted] = useState(false);
@@ -89,9 +91,11 @@ export default function RegisterPage() {
           </div>
           <h2 className="text-xl font-bold">Konto erstellt</h2>
           <p className="max-w-xs text-sm text-(--color-text-muted)">
-            Willkommen bei BATME, {form.firstName}! Der nächste Schritt (Startseite) folgt im
-            nächsten Bauabschnitt.
+            Willkommen bei BATME, {form.firstName}!
           </p>
+          <Button className="mt-2" onClick={() => router.push("/home")}>
+            Zur Startseite
+          </Button>
         </div>
       </PhoneScreen>
     );
