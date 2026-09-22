@@ -1,11 +1,16 @@
+"use client";
+
 import Link from "next/link";
 import { Settings, ChevronRight, Gamepad2, Users } from "lucide-react";
 import { PhoneScreen } from "@/components/PhoneScreen";
 import { Avatar } from "@/components/Avatar";
 import { TrustBadge } from "@/components/TrustBadge";
-import { currentUser, frequentFriends } from "@/lib/mockData";
+import { currentUser } from "@/lib/mockData";
+import { useAppState } from "@/lib/store";
 
 export default function ProfilePage() {
+  const { wins, losses, betsWon, betsLost, trustScore, friendSlugs } = useAppState();
+
   return (
     <PhoneScreen
       title="Profil"
@@ -21,7 +26,7 @@ export default function ProfilePage() {
           <Avatar name={currentUser.username} size="lg" />
           <div className="flex items-center gap-2">
             <span className="text-lg font-bold">{currentUser.username}</span>
-            <TrustBadge score={currentUser.trustScore} />
+            <TrustBadge score={trustScore} />
           </div>
           <span className="text-xs text-(--color-text-muted)">{currentUser.mainGame}</span>
           <Link href="/trust-score" className="text-xs font-medium text-(--color-accent)">
@@ -30,23 +35,19 @@ export default function ProfilePage() {
 
           <div className="mt-4 grid w-full grid-cols-4 divide-x divide-(--color-surface-border) text-center">
             <div className="flex flex-col gap-0.5 px-1">
-              <span className="text-base font-bold">{currentUser.wins}</span>
+              <span className="text-base font-bold">{wins}</span>
               <span className="text-[11px] text-(--color-text-muted)">Wins</span>
             </div>
             <div className="flex flex-col gap-0.5 px-1">
-              <span className="text-base font-bold">{currentUser.losses}</span>
+              <span className="text-base font-bold">{losses}</span>
               <span className="text-[11px] text-(--color-text-muted)">Losses</span>
             </div>
             <div className="flex flex-col gap-0.5 px-1">
-              <span className="text-base font-bold text-(--color-win)">
-                {currentUser.betsWon}
-              </span>
+              <span className="text-base font-bold text-(--color-win)">{betsWon}</span>
               <span className="text-[11px] text-(--color-text-muted)">Wetten +</span>
             </div>
             <div className="flex flex-col gap-0.5 px-1">
-              <span className="text-base font-bold text-(--color-lose)">
-                {currentUser.betsLost}
-              </span>
+              <span className="text-base font-bold text-(--color-lose)">{betsLost}</span>
               <span className="text-[11px] text-(--color-text-muted)">Wetten -</span>
             </div>
           </div>
@@ -62,7 +63,7 @@ export default function ProfilePage() {
           <div className="flex flex-1 flex-col">
             <span className="text-sm font-medium">Freunde</span>
             <span className="text-xs text-(--color-text-muted)">
-              {frequentFriends.length} Freunde verbunden
+              {friendSlugs.length} Freunde verbunden
             </span>
           </div>
           <ChevronRight size={16} className="text-(--color-text-muted)" />

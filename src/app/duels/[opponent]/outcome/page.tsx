@@ -1,25 +1,47 @@
-import { notFound } from "next/navigation";
+"use client";
+
+import { use, useEffect, useRef } from "react";
 import { Wallet } from "lucide-react";
 import { PhoneScreen } from "@/components/PhoneScreen";
 import { Avatar } from "@/components/Avatar";
 import { Button } from "@/components/ui/Button";
 import { getOpponent, currentUser } from "@/lib/mockData";
+import { useAppState } from "@/lib/store";
 
-export default async function OutcomePage({
+export default function OutcomePage({
   params,
   searchParams,
 }: {
   params: Promise<{ opponent: string }>;
   searchParams: Promise<{ game?: string; stake?: string; result?: string }>;
 }) {
-  const { opponent: slug } = await params;
-  const { stake: stakeParam, result } = await searchParams;
+  const { opponent: slug } = use(params);
+  const { game, stake: stakeParam, result } = use(searchParams);
   const opponent = getOpponent(slug);
-  if (!opponent) notFound();
+  const { completeDuel } = useAppState();
+  const settled = useRef(false);
 
   const stake = Number(stakeParam) || 0;
   const won = result === "won";
   const pot = stake * 2;
+
+  useEffect(() => {
+    if (settled.current || !opponent) return;
+    settled.current = true;
+    completeDuel(opponent.name, game ?? "", stake, won ? "won" : "lost");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (!opponent) {
+    return (
+      <PhoneScreen title="Gegner nicht gefunden" nav>
+        <p className="text-sm text-(--color-text-muted)">
+          Dieser Spieler existiert nicht (mehr).
+        </p>
+      </PhoneScreen>
+    );
+  }
+
   const winnerName = won ? currentUser.name : opponent.name;
 
   return (

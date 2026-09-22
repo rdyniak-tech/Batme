@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   ChevronRight,
@@ -14,46 +16,51 @@ import {
   Trash2,
 } from "lucide-react";
 import { PhoneScreen } from "@/components/PhoneScreen";
-import { currentUser } from "@/lib/mockData";
+import { useAppState } from "@/lib/store";
 
-const groups: {
-  title: string;
-  items: { icon: typeof Globe; label: string; href: string; badge?: string }[];
-}[] = [
-  {
-    title: "Konto",
-    items: [
-      {
-        icon: ShieldCheck,
-        label: "Identität verifizieren (KYC)",
-        href: "/kyc",
-        badge: currentUser.kycVerified ? "Verifiziert" : "Ausstehend",
-      },
-      { icon: Globe, label: "Sprache & Land", href: "/settings/language" },
-      { icon: Bell, label: "Benachrichtigungen", href: "/notifications" },
-      { icon: UserPlus, label: "Freunde", href: "/friends" },
-    ],
-  },
-  {
-    title: "Sicherheit & verantwortungsvolles Spielen",
-    items: [
-      { icon: ShieldAlert, label: "Einzahlungs- & Verlustlimits", href: "/settings/limits" },
-      { icon: HeartHandshake, label: "Selbstsperre", href: "/legal/responsible-gaming" },
-      { icon: Gavel, label: "Streitfall-Center", href: "/disputes" },
-    ],
-  },
-  {
-    title: "Rechtliches",
-    items: [
-      { icon: FileText, label: "Impressum", href: "/legal/impressum" },
-      { icon: Scale, label: "AGB", href: "/legal/agb" },
-      { icon: FileText, label: "Datenschutzerklärung", href: "/legal/datenschutz" },
-      { icon: HeartHandshake, label: "Verantwortungsvolles Spielen", href: "/legal/responsible-gaming" },
-    ],
-  },
-];
+type SettingsItem = { icon: typeof Globe; label: string; href: string; badge?: string };
 
 export default function SettingsPage() {
+  const { kycVerified } = useAppState();
+
+  const groups: { title: string; items: SettingsItem[] }[] = [
+    {
+      title: "Konto",
+      items: [
+        {
+          icon: ShieldCheck,
+          label: "Identität verifizieren (KYC)",
+          href: "/kyc",
+          badge: kycVerified ? "Verifiziert" : "Ausstehend",
+        },
+        { icon: Globe, label: "Sprache & Land", href: "/settings/language" },
+        { icon: Bell, label: "Benachrichtigungen", href: "/notifications" },
+        { icon: UserPlus, label: "Freunde", href: "/friends" },
+      ],
+    },
+    {
+      title: "Sicherheit & verantwortungsvolles Spielen",
+      items: [
+        { icon: ShieldAlert, label: "Einzahlungs- & Verlustlimits", href: "/settings/limits" },
+        { icon: HeartHandshake, label: "Selbstsperre", href: "/legal/responsible-gaming" },
+        { icon: Gavel, label: "Streitfall-Center", href: "/disputes" },
+      ],
+    },
+    {
+      title: "Rechtliches",
+      items: [
+        { icon: FileText, label: "Impressum", href: "/legal/impressum" },
+        { icon: Scale, label: "AGB", href: "/legal/agb" },
+        { icon: FileText, label: "Datenschutzerklärung", href: "/legal/datenschutz" },
+        {
+          icon: HeartHandshake,
+          label: "Verantwortungsvolles Spielen",
+          href: "/legal/responsible-gaming",
+        },
+      ],
+    },
+  ];
+
   return (
     <PhoneScreen title="Einstellungen" back nav>
       <div className="flex flex-col gap-6">

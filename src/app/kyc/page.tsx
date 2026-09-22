@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ShieldCheck, IdCard, ScanFace, CheckCircle2 } from "lucide-react";
 import { PhoneScreen } from "@/components/PhoneScreen";
 import { Button } from "@/components/ui/Button";
+import { useAppState } from "@/lib/store";
 
 type Step = "intro" | "id-front" | "id-back" | "selfie" | "pending" | "done";
 
@@ -11,11 +12,16 @@ const stepOrder: Step[] = ["intro", "id-front", "id-back", "selfie", "pending", 
 
 export default function KycPage() {
   const [step, setStep] = useState<Step>("intro");
+  const { verifyKyc } = useAppState();
 
   useEffect(() => {
     if (step !== "pending") return;
-    const t = setTimeout(() => setStep("done"), 1800);
+    const t = setTimeout(() => {
+      verifyKyc();
+      setStep("done");
+    }, 1800);
     return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
 
   const progressIndex = stepOrder.indexOf(step);

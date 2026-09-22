@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { AppStateProvider } from "@/lib/store";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -23,7 +24,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="de"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
     >
-      <body className="app-shell-bg min-h-full flex flex-col">{children}</body>
+      <body className="app-shell-bg min-h-full flex flex-col">
+        <AppStateProvider>{children}</AppStateProvider>
+      </body>
     </html>
   );
 }

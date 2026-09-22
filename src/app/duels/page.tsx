@@ -6,10 +6,13 @@ import { Search } from "lucide-react";
 import { PhoneScreen } from "@/components/PhoneScreen";
 import { Avatar } from "@/components/Avatar";
 import { TrustBadge } from "@/components/TrustBadge";
-import { opponents, frequentFriends } from "@/lib/mockData";
+import { opponents } from "@/lib/mockData";
+import { useAppState } from "@/lib/store";
 
 export default function ChooseOpponentPage() {
   const [query, setQuery] = useState("");
+  const { friendSlugs } = useAppState();
+  const frequentFriends = opponents.filter((o) => friendSlugs.includes(o.slug));
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();

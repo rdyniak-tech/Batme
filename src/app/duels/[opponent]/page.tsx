@@ -1,19 +1,32 @@
-import { notFound } from "next/navigation";
+"use client";
+
+import { use } from "react";
 import { Star } from "lucide-react";
 import { PhoneScreen } from "@/components/PhoneScreen";
 import { Avatar } from "@/components/Avatar";
 import { TrustBadge } from "@/components/TrustBadge";
 import { Button } from "@/components/ui/Button";
 import { getOpponent } from "@/lib/mockData";
+import { useAppState } from "@/lib/store";
 
-export default async function OpponentProfilePage({
+export default function OpponentProfilePage({
   params,
 }: {
   params: Promise<{ opponent: string }>;
 }) {
-  const { opponent: slug } = await params;
+  const { opponent: slug } = use(params);
   const opponent = getOpponent(slug);
-  if (!opponent) notFound();
+  const { isFriend } = useAppState();
+
+  if (!opponent) {
+    return (
+      <PhoneScreen title="Gegner nicht gefunden" nav>
+        <p className="text-sm text-(--color-text-muted)">
+          Dieser Spieler existiert nicht (mehr).
+        </p>
+      </PhoneScreen>
+    );
+  }
 
   return (
     <PhoneScreen title="2. Spielerprofil" nav>
@@ -21,7 +34,7 @@ export default async function OpponentProfilePage({
         <div className="flex flex-col items-center gap-2 rounded-2xl border border-(--color-surface-border) bg-(--color-surface) p-6">
           <div className="relative">
             <Avatar name={opponent.name} size="lg" />
-            {opponent.isFriend && (
+            {isFriend(opponent.slug) && (
               <Star
                 size={16}
                 className="absolute -right-1 -top-1 fill-(--color-warn) text-(--color-warn)"

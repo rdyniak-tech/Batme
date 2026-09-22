@@ -6,12 +6,27 @@ import { Search, UserPlus, Check, X, ShieldOff } from "lucide-react";
 import { PhoneScreen } from "@/components/PhoneScreen";
 import { Avatar } from "@/components/Avatar";
 import { TrustBadge } from "@/components/TrustBadge";
-import { opponents, friendRequests } from "@/lib/mockData";
+import { opponents } from "@/lib/mockData";
+import { useAppState } from "@/lib/store";
 
 export default function FriendsPage() {
   const [query, setQuery] = useState("");
-  const [requests, setRequests] = useState(friendRequests);
-  const friends = opponents.filter((o) => o.isFriend);
+  const {
+    friendRequests,
+    friendSlugs,
+    acceptFriendRequest,
+    declineFriendRequest,
+    sendFriendRequest,
+    removeFriend,
+  } = useAppState();
+
+  const friends = opponents.filter((o) => friendSlugs.includes(o.slug));
+
+  function handleAdd() {
+    if (!query.trim()) return;
+    sendFriendRequest(query.trim());
+    setQuery("");
+  }
 
   return (
     <PhoneScreen title="Freunde" back nav>
@@ -21,12 +36,14 @@ export default function FriendsPage() {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleAdd()}
             placeholder="Username eingeben, um hinzuzufügen"
             className="w-full bg-transparent text-sm text-(--color-text) outline-none placeholder:text-(--color-text-muted)"
           />
           {query && (
             <button
               type="button"
+              onClick={handleAdd}
               className="flex items-center gap-1 rounded-lg bg-(--color-accent)/15 px-2 py-1 text-xs font-semibold text-(--color-accent)"
             >
               <UserPlus size={12} /> Hinzufügen
@@ -34,10 +51,10 @@ export default function FriendsPage() {
           )}
         </label>
 
-        {requests.length > 0 && (
+        {friendRequests.length > 0 && (
           <div className="flex flex-col gap-3">
             <h2 className="text-sm font-semibold text-(--color-text-muted)">Anfragen</h2>
-            {requests.map((r) => (
+            {friendRequests.map((r) => (
               <div
                 key={r.id}
                 className="flex items-center gap-3 rounded-xl border border-(--color-surface-border) bg-(--color-surface) p-3"
@@ -53,7 +70,7 @@ export default function FriendsPage() {
                   <div className="flex gap-2">
                     <button
                       type="button"
-                      onClick={() => setRequests((rs) => rs.filter((x) => x.id !== r.id))}
+                      onClick={() => acceptFriendRequest(r.id)}
                       className="flex h-8 w-8 items-center justify-center rounded-full bg-(--color-win)/15 text-(--color-win)"
                       aria-label="Annehmen"
                     >
@@ -61,7 +78,7 @@ export default function FriendsPage() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setRequests((rs) => rs.filter((x) => x.id !== r.id))}
+                      onClick={() => declineFriendRequest(r.id)}
                       className="flex h-8 w-8 items-center justify-center rounded-full bg-(--color-lose)/15 text-(--color-lose)"
                       aria-label="Ablehnen"
                     >
@@ -96,6 +113,7 @@ export default function FriendsPage() {
                 </Link>
                 <button
                   type="button"
+                  onClick={() => removeFriend(f.slug)}
                   aria-label="Blockieren"
                   className="text-(--color-text-muted)"
                 >
@@ -103,6 +121,9 @@ export default function FriendsPage() {
                 </button>
               </div>
             ))}
+            {friends.length === 0 && (
+              <p className="text-sm text-(--color-text-muted)">Noch keine Freunde.</p>
+            )}
           </div>
         </div>
       </div>

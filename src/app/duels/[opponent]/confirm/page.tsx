@@ -1,24 +1,52 @@
-import { notFound } from "next/navigation";
+"use client";
+
+import { use, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Gamepad2, Camera, Handshake } from "lucide-react";
 import { PhoneScreen } from "@/components/PhoneScreen";
 import { Avatar } from "@/components/Avatar";
 import { Button } from "@/components/ui/Button";
 import { getOpponent, currentUser } from "@/lib/mockData";
+import { useAppState } from "@/lib/store";
 
-export default async function ConfirmBetPage({
+export default function ConfirmBetPage({
   params,
   searchParams,
 }: {
   params: Promise<{ opponent: string }>;
   searchParams: Promise<{ game?: string; stake?: string; mode?: string }>;
 }) {
-  const { opponent: slug } = await params;
-  const { game, stake: stakeParam, mode = "trust" } = await searchParams;
+  const { opponent: slug } = use(params);
+  const { game, stake: stakeParam, mode = "trust" } = use(searchParams);
   const opponent = getOpponent(slug);
-  if (!opponent) notFound();
+  const router = useRouter();
+  const { wallet, placeBet } = useAppState();
+  const [error, setError] = useState("");
+
+  if (!opponent) {
+    return (
+      <PhoneScreen title="Gegner nicht gefunden" nav>
+        <p className="text-sm text-(--color-text-muted)">
+          Dieser Spieler existiert nicht (mehr).
+        </p>
+      </PhoneScreen>
+    );
+  }
 
   const stake = Number(stakeParam) || 0;
   const isProof = mode === "proof";
+  const insufficientFunds = stake > wallet;
+
+  function handleConfirm() {
+    const ok = placeBet(opponent!.name, game ?? "", stake);
+    if (!ok) {
+      setError("Nicht genügend Guthaben. Bitte zuerst dein Wallet aufladen.");
+      return;
+    }
+    router.push(
+      `/duels/${opponent!.slug}/match?game=${encodeURIComponent(game ?? "")}&stake=${stake}&mode=${mode}`,
+    );
+  }
 
   return (
     <PhoneScreen title="4. Bestätigen" nav>
@@ -52,11 +80,14 @@ export default async function ConfirmBetPage({
           </div>
         </div>
 
-        <Button
-          href={`/duels/${opponent.slug}/match?game=${encodeURIComponent(
-            game ?? "",
-          )}&stake=${stake}&mode=${mode}`}
-        >
+        {insufficientFunds && (
+          <p className="text-center text-xs text-(--color-lose)">
+            Dein Guthaben ({wallet}€) reicht für diesen Einsatz nicht aus.
+          </p>
+        )}
+        {error && <p className="text-center text-xs text-(--color-lose)">{error}</p>}
+
+        <Button onClick={handleConfirm} disabled={insufficientFunds}>
           Confirm Bet
         </Button>
       </div>

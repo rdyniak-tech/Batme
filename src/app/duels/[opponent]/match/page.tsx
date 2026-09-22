@@ -2,7 +2,7 @@
 
 import { use, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Lock, Gamepad2, Camera, CheckCircle2 } from "lucide-react";
+import { Lock, Gamepad2, Camera, CheckCircle2, Video } from "lucide-react";
 import { PhoneScreen } from "@/components/PhoneScreen";
 import { Avatar } from "@/components/Avatar";
 import { Button } from "@/components/ui/Button";
@@ -22,6 +22,7 @@ export default function MatchActivePage({
 
   const [beforeProof, setBeforeProof] = useState(!isProof);
   const [afterProof, setAfterProof] = useState(false);
+  const [afterProofType, setAfterProofType] = useState<"foto" | "video" | null>(null);
 
   if (!opponent) {
     return (
@@ -100,14 +101,43 @@ export default function MatchActivePage({
           <div className="flex flex-col items-center gap-3 rounded-2xl border border-(--color-surface-border) bg-(--color-surface) p-5 text-center">
             <Camera size={24} className="text-(--color-accent)" />
             <p className="text-sm text-(--color-text-muted)">
-              Spiel beendet? Erstelle jetzt den Beweis-Screenshot vom Endergebnis.
+              Spiel beendet? Erstelle jetzt den Beweis vom Endergebnis. Auf PS5/Xbox empfehlen
+              wir die integrierte Aufnahme der letzten 60 Sekunden — ohne Videobeweis gilt bei
+              Uneinigkeit das zuerst eingereichte Foto.
             </p>
-            <Button variant="secondary" onClick={() => setAfterProof(true)}>
-              Beweisfoto (Endergebnis) aufnehmen
-            </Button>
+            <div className="grid w-full grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setAfterProofType("foto");
+                  setAfterProof(true);
+                }}
+                className="flex flex-col items-center gap-1.5 rounded-xl border border-(--color-surface-border) bg-(--color-bg-elevated) p-3"
+              >
+                <Camera size={18} className="text-(--color-accent)" />
+                <span className="text-xs font-semibold">Foto</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setAfterProofType("video");
+                  setAfterProof(true);
+                }}
+                className="flex flex-col items-center gap-1.5 rounded-xl border border-(--color-surface-border) bg-(--color-bg-elevated) p-3"
+              >
+                <Video size={18} className="text-(--color-accent)" />
+                <span className="text-xs font-semibold">Videoclip (60s)</span>
+              </button>
+            </div>
           </div>
         ) : (
           <>
+            {isProof && afterProofType && (
+              <div className="flex items-center justify-center gap-1.5 text-xs text-(--color-win)">
+                <CheckCircle2 size={13} />
+                {afterProofType === "video" ? "Videobeweis gespeichert" : "Endergebnis-Foto gespeichert"}
+              </div>
+            )}
             <p className="text-center text-xs text-(--color-text-muted)">
               Spiel auf eurer Konsole/PC fertig gespielt? Beide Seiten bestätigen anschließend
               das Ergebnis.
