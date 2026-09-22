@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { Search, History } from "lucide-react";
 import { PhoneScreen } from "@/components/PhoneScreen";
 import { Avatar } from "@/components/Avatar";
 import { TrustBadge } from "@/components/TrustBadge";
@@ -11,8 +11,9 @@ import { useAppState } from "@/lib/store";
 
 export default function ChooseOpponentPage() {
   const [query, setQuery] = useState("");
-  const { friendSlugs } = useAppState();
+  const { friendSlugs, duelHistory } = useAppState();
   const frequentFriends = opponents.filter((o) => friendSlugs.includes(o.slug));
+  const activeCount = duelHistory.filter((d) => d.status === "active").length;
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -21,7 +22,24 @@ export default function ChooseOpponentPage() {
   }, [query]);
 
   return (
-    <PhoneScreen title="1. Gegner wählen" nav>
+    <PhoneScreen
+      title="1. Gegner wählen"
+      nav
+      headerAction={
+        <Link
+          href="/duels/history"
+          className="flex items-center gap-1.5 text-xs font-medium text-(--color-text-muted)"
+        >
+          <History size={16} />
+          Meine Duelle
+          {activeCount > 0 && (
+            <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-(--color-accent) px-1 text-[10px] font-bold text-white">
+              {activeCount}
+            </span>
+          )}
+        </Link>
+      }
+    >
       <div className="flex flex-col gap-6">
         <label className="flex items-center gap-2 rounded-xl border border-(--color-surface-border) bg-(--color-surface) px-4 py-3">
           <Search size={18} className="text-(--color-text-muted)" />

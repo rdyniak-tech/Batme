@@ -17,6 +17,7 @@ export default function ConfirmResultPage({
   const searchParams = useSearchParams();
   const game = searchParams.get("game") ?? "";
   const stake = Number(searchParams.get("stake")) || 0;
+  const duelId = searchParams.get("duel") ?? "";
   const [picked, setPicked] = useState<"won" | "lost" | null>(null);
 
   if (!opponent) {
@@ -31,7 +32,7 @@ export default function ConfirmResultPage({
 
   function pick(result: "won" | "lost") {
     setPicked(result);
-    const params = new URLSearchParams({ game, stake: String(stake), result });
+    const params = new URLSearchParams({ game, stake: String(stake), result, duel: duelId });
     router.push(`/duels/${opponent!.slug}/outcome?${params.toString()}`);
   }
 

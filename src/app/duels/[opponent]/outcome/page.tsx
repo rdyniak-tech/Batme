@@ -13,10 +13,10 @@ export default function OutcomePage({
   searchParams,
 }: {
   params: Promise<{ opponent: string }>;
-  searchParams: Promise<{ game?: string; stake?: string; result?: string }>;
+  searchParams: Promise<{ game?: string; stake?: string; result?: string; duel?: string }>;
 }) {
   const { opponent: slug } = use(params);
-  const { game, stake: stakeParam, result } = use(searchParams);
+  const { stake: stakeParam, result, duel: duelId } = use(searchParams);
   const opponent = getOpponent(slug);
   const { completeDuel } = useAppState();
   const settled = useRef(false);
@@ -26,9 +26,9 @@ export default function OutcomePage({
   const pot = stake * 2;
 
   useEffect(() => {
-    if (settled.current || !opponent) return;
+    if (settled.current || !opponent || !duelId) return;
     settled.current = true;
-    completeDuel(opponent.name, game ?? "", stake, won ? "won" : "lost");
+    completeDuel(duelId, won ? "won" : "lost");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

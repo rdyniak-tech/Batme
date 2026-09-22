@@ -12,6 +12,7 @@ import {
   HeartHandshake,
   UserPlus,
   Gavel,
+  History,
   LogOut,
   Trash2,
 } from "lucide-react";
@@ -33,6 +34,7 @@ export default function SettingsPage() {
           href: "/kyc",
           badge: kycVerified ? "Verifiziert" : "Ausstehend",
         },
+        { icon: History, label: "Meine Duelle", href: "/duels/history" },
         { icon: Globe, label: "Sprache & Land", href: "/settings/language" },
         { icon: Bell, label: "Benachrichtigungen", href: "/notifications" },
         { icon: UserPlus, label: "Freunde", href: "/friends" },

@@ -38,13 +38,13 @@ export default function ConfirmBetPage({
   const insufficientFunds = stake > wallet;
 
   function handleConfirm() {
-    const ok = placeBet(opponent!.name, game ?? "", stake);
-    if (!ok) {
+    const duelId = placeBet(opponent!.slug, opponent!.name, game ?? "", stake, mode as "trust" | "proof");
+    if (!duelId) {
       setError("Nicht genügend Guthaben. Bitte zuerst dein Wallet aufladen.");
       return;
     }
     router.push(
-      `/duels/${opponent!.slug}/match?game=${encodeURIComponent(game ?? "")}&stake=${stake}&mode=${mode}`,
+      `/duels/${opponent!.slug}/match?game=${encodeURIComponent(game ?? "")}&stake=${stake}&mode=${mode}&duel=${duelId}`,
     );
   }
 

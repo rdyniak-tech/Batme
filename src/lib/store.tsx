@@ -20,6 +20,17 @@ import {
 
 const STORAGE_KEY = "batme_state_v1";
 
+export type DuelRecord = {
+  id: string;
+  opponentSlug: string;
+  opponentName: string;
+  game: string;
+  stake: number;
+  mode: "trust" | "proof";
+  status: "active" | "won" | "lost";
+  date: string;
+};
+
 type State = {
   wallet: number;
   transactions: Transaction[];
@@ -31,6 +42,7 @@ type State = {
   betsLost: number;
   friendSlugs: string[];
   friendRequests: FriendRequest[];
+  duelHistory: DuelRecord[];
 };
 
 function initialState(): State {
@@ -45,6 +57,28 @@ function initialState(): State {
     betsLost: initialUser.betsLost,
     friendSlugs: opponents.filter((o) => o.isFriend).map((o) => o.slug),
     friendRequests: initialFriendRequests,
+    duelHistory: [
+      {
+        id: "seed_1",
+        opponentSlug: "perino",
+        opponentName: "Perino",
+        game: "FIFA 26",
+        stake: 33,
+        mode: "trust",
+        status: "won",
+        date: "Heute, 14:32",
+      },
+      {
+        id: "seed_2",
+        opponentSlug: "teamnova",
+        opponentName: "TeamNova",
+        game: "Call of Duty",
+        stake: 20,
+        mode: "proof",
+        status: "lost",
+        date: "Gestern, 18:40",
+      },
+    ],
   };
 }
 
@@ -54,8 +88,14 @@ function nowLabel() {
 
 type AppStateValue = State & {
   isFriend: (slug: string) => boolean;
-  placeBet: (opponentName: string, game: string, stake: number) => boolean;
-  completeDuel: (opponentName: string, game: string, stake: number, result: "won" | "lost") => void;
+  placeBet: (
+    opponentSlug: string,
+    opponentName: string,
+    game: string,
+    stake: number,
+    mode: "trust" | "proof",
+  ) => string | null;
+  completeDuel: (duelId: string, result: "won" | "lost") => void;
   verifyKyc: () => void;
   deposit: (amount: number) => void;
   withdraw: (amount: number) => boolean;
@@ -103,53 +143,78 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     [state.friendSlugs],
   );
 
-  const placeBet = useCallback((opponentName: string, game: string, stake: number) => {
-    let ok = false;
-    setState((s) => {
-      if (stake > s.wallet) return s;
-      ok = true;
-      const tx: Transaction = {
-        id: `tx_${Date.now()}`,
-        type: "stake",
-        label: `Einsatz vs. ${opponentName} (${game})`,
-        amount: -stake,
-        date: nowLabel(),
-      };
-      return { ...s, wallet: s.wallet - stake, transactions: [tx, ...s.transactions] };
-    });
-    return ok;
-  }, []);
-
-  const completeDuel = useCallback(
-    (opponentName: string, game: string, stake: number, result: "won" | "lost") => {
+  const placeBet = useCallback(
+    (opponentSlug: string, opponentName: string, game: string, stake: number, mode: "trust" | "proof") => {
+      const id = `duel_${Date.now()}`;
+      let created = false;
       setState((s) => {
-        if (result === "won") {
-          const pot = stake * 2;
-          const tx: Transaction = {
-            id: `tx_${Date.now()}`,
-            type: "win",
-            label: `Sieg vs. ${opponentName} (${game})`,
-            amount: pot,
-            date: nowLabel(),
-          };
-          return {
-            ...s,
-            wallet: s.wallet + pot,
-            transactions: [tx, ...s.transactions],
-            wins: s.wins + 1,
-            betsWon: s.betsWon + 1,
-            trustScore: Math.min(100, s.trustScore + 1),
-          };
-        }
+        if (stake > s.wallet) return s;
+        created = true;
+        const tx: Transaction = {
+          id: `tx_${Date.now()}`,
+          type: "stake",
+          label: `Einsatz vs. ${opponentName} (${game})`,
+          amount: -stake,
+          date: nowLabel(),
+        };
+        const duel: DuelRecord = {
+          id,
+          opponentSlug,
+          opponentName,
+          game,
+          stake,
+          mode,
+          status: "active",
+          date: nowLabel(),
+        };
         return {
           ...s,
-          losses: s.losses + 1,
-          betsLost: s.betsLost + 1,
+          wallet: s.wallet - stake,
+          transactions: [tx, ...s.transactions],
+          duelHistory: [duel, ...s.duelHistory],
         };
       });
+      return created ? id : null;
     },
     [],
   );
+
+  const completeDuel = useCallback((duelId: string, result: "won" | "lost") => {
+    setState((s) => {
+      const duel = s.duelHistory.find((d) => d.id === duelId);
+      if (!duel || duel.status !== "active") return s;
+
+      const duelHistory = s.duelHistory.map((d) =>
+        d.id === duelId ? { ...d, status: result } : d,
+      );
+
+      if (result === "won") {
+        const pot = duel.stake * 2;
+        const tx: Transaction = {
+          id: `tx_${Date.now()}`,
+          type: "win",
+          label: `Sieg vs. ${duel.opponentName} (${duel.game})`,
+          amount: pot,
+          date: nowLabel(),
+        };
+        return {
+          ...s,
+          duelHistory,
+          wallet: s.wallet + pot,
+          transactions: [tx, ...s.transactions],
+          wins: s.wins + 1,
+          betsWon: s.betsWon + 1,
+          trustScore: Math.min(100, s.trustScore + 1),
+        };
+      }
+      return {
+        ...s,
+        duelHistory,
+        losses: s.losses + 1,
+        betsLost: s.betsLost + 1,
+      };
+    });
+  }, []);
 
   const verifyKyc = useCallback(() => {
     setState((s) => ({ ...s, kycVerified: true }));

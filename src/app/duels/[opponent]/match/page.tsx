@@ -19,6 +19,7 @@ export default function MatchActivePage({
   const game = searchParams.get("game") ?? "";
   const stake = Number(searchParams.get("stake")) || 0;
   const isProof = searchParams.get("mode") === "proof";
+  const duelId = searchParams.get("duel") ?? "";
 
   const [beforeProof, setBeforeProof] = useState(!isProof);
   const [afterProof, setAfterProof] = useState(false);
@@ -34,7 +35,7 @@ export default function MatchActivePage({
     );
   }
 
-  const resultHref = `/duels/${opponent.slug}/result?game=${encodeURIComponent(game)}&stake=${stake}`;
+  const resultHref = `/duels/${opponent.slug}/result?game=${encodeURIComponent(game)}&stake=${stake}&duel=${duelId}`;
 
   if (!beforeProof) {
     return (
