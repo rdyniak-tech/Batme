@@ -53,7 +53,7 @@ export default function ProfilePage() {
         </div>
 
         <Link
-          href="/duels"
+          href="/friends"
           className="flex items-center gap-3 rounded-xl border border-(--color-surface-border) bg-(--color-surface) p-3"
         >
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-(--color-accent)/15 text-(--color-accent)">

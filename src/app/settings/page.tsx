@@ -4,32 +4,42 @@ import {
   Globe,
   Bell,
   ShieldAlert,
+  ShieldCheck,
   FileText,
   Scale,
   HeartHandshake,
   UserPlus,
+  Gavel,
   LogOut,
   Trash2,
 } from "lucide-react";
 import { PhoneScreen } from "@/components/PhoneScreen";
+import { currentUser } from "@/lib/mockData";
 
 const groups: {
   title: string;
-  items: { icon: typeof Globe; label: string; href: string; danger?: boolean }[];
+  items: { icon: typeof Globe; label: string; href: string; badge?: string }[];
 }[] = [
   {
     title: "Konto",
     items: [
-      { icon: Globe, label: "Sprache & Land", href: "#" },
+      {
+        icon: ShieldCheck,
+        label: "Identität verifizieren (KYC)",
+        href: "/kyc",
+        badge: currentUser.kycVerified ? "Verifiziert" : "Ausstehend",
+      },
+      { icon: Globe, label: "Sprache & Land", href: "/settings/language" },
       { icon: Bell, label: "Benachrichtigungen", href: "/notifications" },
-      { icon: UserPlus, label: "Freunde einladen", href: "/duels" },
+      { icon: UserPlus, label: "Freunde", href: "/friends" },
     ],
   },
   {
     title: "Sicherheit & verantwortungsvolles Spielen",
     items: [
-      { icon: ShieldAlert, label: "Einzahlungs- & Verlustlimits", href: "#" },
+      { icon: ShieldAlert, label: "Einzahlungs- & Verlustlimits", href: "/settings/limits" },
       { icon: HeartHandshake, label: "Selbstsperre", href: "/legal/responsible-gaming" },
+      { icon: Gavel, label: "Streitfall-Center", href: "/disputes" },
     ],
   },
   {
@@ -59,6 +69,17 @@ export default function SettingsPage() {
                 >
                   <item.icon size={18} className="text-(--color-text-muted)" />
                   <span className="flex-1 text-sm font-medium">{item.label}</span>
+                  {item.badge && (
+                    <span
+                      className={`text-xs font-semibold ${
+                        item.badge === "Verifiziert"
+                          ? "text-(--color-win)"
+                          : "text-(--color-warn)"
+                      }`}
+                    >
+                      {item.badge}
+                    </span>
+                  )}
                   <ChevronRight size={16} className="text-(--color-text-muted)" />
                 </Link>
               ))}

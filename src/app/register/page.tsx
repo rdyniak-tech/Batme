@@ -91,11 +91,15 @@ export default function RegisterPage() {
           </div>
           <h2 className="text-xl font-bold">Konto erstellt</h2>
           <p className="max-w-xs text-sm text-(--color-text-muted)">
-            Willkommen bei BATME, {form.firstName}!
+            Willkommen bei BATME, {form.firstName}! Verifiziere dein Konto, um einzahlen und
+            wetten zu können.
           </p>
-          <Button className="mt-2" onClick={() => router.push("/home")}>
-            Zur Startseite
-          </Button>
+          <div className="mt-2 flex w-full flex-col gap-2">
+            <Button onClick={() => router.push("/kyc")}>Jetzt verifizieren</Button>
+            <Button variant="secondary" onClick={() => router.push("/home")}>
+              Später
+            </Button>
+          </div>
         </div>
       </PhoneScreen>
     );

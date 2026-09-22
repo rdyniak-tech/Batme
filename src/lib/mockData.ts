@@ -24,6 +24,7 @@ export type Opponent = {
 export const currentUser = {
   name: "Du",
   username: "MaxM",
+  email: "max@example.com",
   wallet: 245,
   trustScore: 93,
   wins: 41,
@@ -31,12 +32,67 @@ export const currentUser = {
   betsWon: 28,
   betsLost: 9,
   mainGame: "FIFA 26",
+  kycVerified: false,
+  depositLimit: 200,
+  lossLimit: 100,
+  country: "Deutschland",
+  language: "Deutsch",
   linkedAccounts: [
     { platform: "PlayStation", handle: "MaxM_PSN", linked: true },
     { platform: "Xbox", handle: "", linked: false },
     { platform: "Steam", handle: "", linked: false },
   ],
 };
+
+export type FriendRequest = {
+  id: string;
+  slug: string;
+  name: string;
+  direction: "incoming" | "outgoing";
+};
+
+export const friendRequests: FriendRequest[] = [
+  { id: "fr1", slug: "hakan62aslan", name: "Hakan62aslan", direction: "incoming" },
+];
+
+export type Dispute = {
+  id: string;
+  opponentSlug: string;
+  opponentName: string;
+  game: string;
+  stake: number;
+  status: "open" | "resolved";
+  reason: string;
+  openedAt: string;
+  resolution?: string;
+  resolvedInFavorOf?: "you" | "opponent";
+};
+
+export const disputes: Dispute[] = [
+  {
+    id: "d1",
+    opponentSlug: "rafael_k",
+    opponentName: "Rafael_K",
+    game: "FIFA 26",
+    stake: 15,
+    status: "resolved",
+    reason: "Unterschiedliche Ergebnis-Angaben (3:1 vs. 1:3).",
+    openedAt: "vor 2 Tagen",
+    resolution:
+      "Beweisfotos ausgewertet: Endstand 3:1 bestätigt durch Zeitstempel-Foto. Einsatz an dich ausgezahlt, TrustScore von Rafael_K gesenkt.",
+    resolvedInFavorOf: "you",
+  },
+  {
+    id: "d2",
+    opponentSlug: "teamnova",
+    opponentName: "TeamNova",
+    game: "Call of Duty",
+    stake: 20,
+    status: "open",
+    reason: "Gegner hat das Ergebnis nicht bestätigt (kein Nachweisfoto vorhanden).",
+    openedAt: "vor 3 Std.",
+  },
+];
 
 export type Transaction = {
   id: string;
@@ -62,6 +118,7 @@ export type NotificationItem = {
   body: string;
   time: string;
   read: boolean;
+  href?: string;
 };
 
 export const notifications: NotificationItem[] = [
@@ -72,6 +129,7 @@ export const notifications: NotificationItem[] = [
     body: "Perino hat deine Herausforderung in FIFA 26 angenommen.",
     time: "vor 5 Min.",
     read: false,
+    href: "/duels/perino",
   },
   {
     id: "n2",
@@ -80,6 +138,7 @@ export const notifications: NotificationItem[] = [
     body: "66€ wurden deinem Guthaben gutgeschrieben.",
     time: "vor 2 Std.",
     read: false,
+    href: "/wallet",
   },
   {
     id: "n3",
@@ -88,6 +147,7 @@ export const notifications: NotificationItem[] = [
     body: "\"Perino vs. Michel_S\" beginnt in 15 Minuten. Bitte bestätigen.",
     time: "vor 3 Std.",
     read: true,
+    href: "/events/perino-vs-michel_s",
   },
   {
     id: "n4",
@@ -96,6 +156,7 @@ export const notifications: NotificationItem[] = [
     body: "Hakan62aslan möchte dich als Freund hinzufügen.",
     time: "gestern",
     read: true,
+    href: "/friends",
   },
   {
     id: "n5",
@@ -104,6 +165,7 @@ export const notifications: NotificationItem[] = [
     body: "Dein Streitfall zu \"vs. Rafael_K\" wurde entschieden.",
     time: "vor 2 Tagen",
     read: true,
+    href: "/disputes/d1",
   },
 ];
 

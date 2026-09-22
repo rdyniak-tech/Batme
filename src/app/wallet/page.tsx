@@ -1,4 +1,5 @@
-import { ArrowDownToLine, ArrowUpFromLine, Gift, Swords, Trophy } from "lucide-react";
+import Link from "next/link";
+import { ArrowDownToLine, ArrowUpFromLine, Gift, Swords, Trophy, ShieldAlert } from "lucide-react";
 import { PhoneScreen } from "@/components/PhoneScreen";
 import { currentUser, walletTransactions, type Transaction } from "@/lib/mockData";
 
@@ -21,6 +22,19 @@ export default function WalletPage() {
   return (
     <PhoneScreen title="Wallet" nav>
       <div className="flex flex-col gap-6">
+        {!currentUser.kycVerified && (
+          <Link
+            href="/kyc"
+            className="flex items-center gap-3 rounded-xl border border-(--color-warn)/30 bg-(--color-warn)/10 p-3 text-xs text-(--color-warn)"
+          >
+            <ShieldAlert size={18} className="shrink-0" />
+            <span className="flex-1">
+              Konto noch nicht verifiziert. Einzahlungen und Auszahlungen sind erst nach der
+              Identitätsprüfung möglich.
+            </span>
+          </Link>
+        )}
+
         <div className="flex flex-col items-center gap-4 rounded-2xl border border-(--color-accent)/30 bg-gradient-to-br from-(--color-surface) to-(--color-bg-elevated) p-6 text-center shadow-[0_0_40px_-20px_rgba(52,211,224,0.7)]">
           <span className="text-xs font-medium text-(--color-text-muted)">Guthaben</span>
           <span className="text-4xl font-extrabold">{currentUser.wallet}€</span>
