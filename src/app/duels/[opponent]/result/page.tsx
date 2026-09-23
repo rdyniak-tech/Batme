@@ -4,6 +4,7 @@ import { use, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { PhoneScreen } from "@/components/PhoneScreen";
 import { Avatar } from "@/components/Avatar";
+import { OpponentAvatar } from "@/components/OpponentAvatar";
 import { getOpponent, currentUser } from "@/lib/mockData";
 
 export default function ConfirmResultPage({
@@ -41,7 +42,12 @@ export default function ConfirmResultPage({
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-center gap-6 rounded-2xl border border-(--color-surface-border) bg-(--color-surface) p-6">
           <Avatar name={currentUser.name} size="lg" />
-          <Avatar name={opponent.name} size="lg" />
+          <OpponentAvatar
+            name={opponent.name}
+            isTeam={opponent.isTeam}
+            members={opponent.members}
+            size="lg"
+          />
         </div>
 
         <div className="flex flex-col gap-3">

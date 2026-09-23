@@ -19,6 +19,8 @@ export type Opponent = {
   headToHeadWins: number;
   headToHeadLosses: number;
   games: GameStats[];
+  isTeam?: boolean;
+  members?: string[];
 };
 
 export const currentUser = {
@@ -336,6 +338,54 @@ export const opponents: Opponent[] = [
         draws: 0,
         winRate: 46,
         profitLoss: -35,
+      },
+    ],
+  },
+  {
+    slug: "team-alpha",
+    name: "Team Alpha",
+    isFriend: false,
+    trustScore: 82,
+    mainGame: "Call of Duty",
+    wins: 51,
+    losses: 19,
+    headToHeadWins: 0,
+    headToHeadLosses: 0,
+    isTeam: true,
+    members: ["Kevin_K", "Dennis_R", "Jonas_M"],
+    games: [
+      {
+        game: "Call of Duty",
+        played: 70,
+        wins: 51,
+        losses: 19,
+        draws: 0,
+        winRate: 73,
+        profitLoss: 210,
+      },
+    ],
+  },
+  {
+    slug: "valkyrie-esports",
+    name: "Valkyrie Esports",
+    isFriend: false,
+    trustScore: 89,
+    mainGame: "Call of Duty",
+    wins: 33,
+    losses: 10,
+    headToHeadWins: 0,
+    headToHeadLosses: 0,
+    isTeam: true,
+    members: ["Lara_V", "Sofia_T", "Nadja_P"],
+    games: [
+      {
+        game: "Call of Duty",
+        played: 43,
+        wins: 33,
+        losses: 10,
+        draws: 0,
+        winRate: 77,
+        profitLoss: 165,
       },
     ],
   },

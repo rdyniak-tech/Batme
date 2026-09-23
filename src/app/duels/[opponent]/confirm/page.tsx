@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Gamepad2, Camera, Handshake } from "lucide-react";
 import { PhoneScreen } from "@/components/PhoneScreen";
 import { Avatar } from "@/components/Avatar";
+import { OpponentAvatar } from "@/components/OpponentAvatar";
 import { Button } from "@/components/ui/Button";
 import { getOpponent, currentUser } from "@/lib/mockData";
 import { useAppState } from "@/lib/store";
@@ -59,7 +60,12 @@ export default function ConfirmBetPage({
 
           <div className="flex items-center justify-between px-2">
             <Avatar name={currentUser.name} size="lg" />
-            <Avatar name={opponent.name} size="lg" />
+            <OpponentAvatar
+              name={opponent.name}
+              isTeam={opponent.isTeam}
+              members={opponent.members}
+              size="lg"
+            />
           </div>
           <div className="flex items-center justify-between px-2 text-xs text-(--color-text-muted)">
             <span>{currentUser.name}</span>

@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { Lock, Gamepad2, Camera, CheckCircle2, Video } from "lucide-react";
 import { PhoneScreen } from "@/components/PhoneScreen";
 import { Avatar } from "@/components/Avatar";
+import { OpponentAvatar } from "@/components/OpponentAvatar";
 import { Button } from "@/components/ui/Button";
 import { getOpponent, currentUser } from "@/lib/mockData";
 
@@ -74,7 +75,12 @@ export default function MatchActivePage({
             </div>
 
             <div className="flex flex-col items-center gap-1.5">
-              <Avatar name={opponent.name} size="lg" />
+              <OpponentAvatar
+                name={opponent.name}
+                isTeam={opponent.isTeam}
+                members={opponent.members}
+                size="lg"
+              />
               <span className="text-xs text-(--color-text-muted)">{opponent.name}</span>
             </div>
           </div>

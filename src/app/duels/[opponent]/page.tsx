@@ -32,20 +32,34 @@ export default function OpponentProfilePage({
     <PhoneScreen title="2. Spielerprofil" nav>
       <div className="flex flex-col gap-6">
         <div className="flex flex-col items-center gap-2 rounded-2xl border border-(--color-surface-border) bg-(--color-surface) p-6">
-          <div className="relative">
-            <Avatar name={opponent.name} size="lg" />
-            {isFriend(opponent.slug) && (
-              <Star
-                size={16}
-                className="absolute -right-1 -top-1 fill-(--color-warn) text-(--color-warn)"
-              />
-            )}
-          </div>
+          {opponent.isTeam ? (
+            <div className="flex -space-x-4">
+              {(opponent.members ?? []).map((m) => (
+                <Avatar key={m} name={m} size="lg" />
+              ))}
+            </div>
+          ) : (
+            <div className="relative">
+              <Avatar name={opponent.name} size="lg" />
+              {isFriend(opponent.slug) && (
+                <Star
+                  size={16}
+                  className="absolute -right-1 -top-1 fill-(--color-warn) text-(--color-warn)"
+                />
+              )}
+            </div>
+          )}
           <div className="flex items-center gap-2">
             <span className="text-lg font-bold">{opponent.name}</span>
             <TrustBadge score={opponent.trustScore} />
           </div>
-          <span className="text-xs text-(--color-text-muted)">{opponent.mainGame}</span>
+          {opponent.isTeam ? (
+            <span className="text-xs text-(--color-text-muted)">
+              {opponent.members?.join(" · ")}
+            </span>
+          ) : (
+            <span className="text-xs text-(--color-text-muted)">{opponent.mainGame}</span>
+          )}
 
           <div className="mt-4 grid w-full grid-cols-3 divide-x divide-(--color-surface-border) text-center">
             <div className="flex flex-col gap-0.5 px-2">
@@ -102,7 +116,9 @@ export default function OpponentProfilePage({
           </div>
         </div>
 
-        <Button href={`/duels/${opponent.slug}/wager`}>Herausfordern</Button>
+        <Button href={`/duels/${opponent.slug}/wager`}>
+          {opponent.isTeam ? "Team herausfordern" : "Herausfordern"}
+        </Button>
       </div>
     </PhoneScreen>
   );
